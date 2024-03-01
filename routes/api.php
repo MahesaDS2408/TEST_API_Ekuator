@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +17,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+// Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/login', [AuthController::class, 'login']);
+
+Route::group(['prefix' => 'v1' ], function () { 
+    Route::post( 'register' , [ AuthController::class , 'register' ]); 
+    Route::post( 'login' , [ AuthController::class , 'login' ]); 
+
+    Route::middleware(['auth:api'])->group( function(){
+        Route::post('logout', [AuthController::class, 'logout']);
+
+        Route::post('products', [ProductController::class, 'store']);
+        Route::put('products/{product}', [ProductController::class, 'update']);
+        Route::delete('products/{product}', [ProductController::class, 'destroy']);
+        Route::get('products', [ProductController::class, 'index']);
+        Route::get('products/{product}', [ProductController::class, 'show']);
+
+
+        Route::post('transactions', [TransactionController::class, 'store']);
+        Route::get('transactions', [TransactionController::class, 'index']);
+        Route::get('transactions/{transaction}', [TransactionController::class, 'show']);
+        Route::put('transactions/{transaction}', [TransactionController::class, 'update']);
+        Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy']);
+    });
+
 });
